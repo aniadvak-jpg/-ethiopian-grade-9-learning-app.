@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#183c32">
+  <title>Grade 9 Quest - Ethiopia</title>
+  <style>
+    :root {
+      --green: #2eae70;
+      --dark: #183c32;
+      --background: #f4f8f5;
+      --muted: #718078;
+      --border: #e1ebe4;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: #26372f;
+      background: var(--background);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 17px 20px;
+      color: white;
+      background: var(--dark);
+    }
+    header h2 { margin: 0; font-size: 20px; }
+    .stats { display: flex; gap: 13px; font-weight: bold; }
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      display: flex;
+      justify-content: space-around;
+      gap: 5px;
+      padding: 12px 6px;
+      background: white;
+      box-shadow: 0 2px 8px #00000010;
+    }
+    nav button {
+      border: 0;
+      background: transparent;
+      color: #466257;
+      font-size: 14px;
+      font-weight: bold;
+      padding: 7px;
+      cursor: pointer;
+    }
+    main { width: 100%; max-width: 850px; margin: auto; padding: 18px; }
+    .welcome {
+      padding: 22px;
+      margin-bottom: 22px;
+      border-radius: 18px;
+      background: #dff5e8;
+    }
+    .welcome h1 { margin: 0 0 8px; }
+    .progress-bg {
+      height: 12px;
+      overflow: hidden;
+      border-radius: 20px;
+      background: #cbded1;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0;
+      border-radius: 20px;
+      background: var(--green);
+      transition: width .2s ease;
+    }
+    .subjects {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .subject {
+      min-width: 0;
+      padding: 16px;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      background: white;
+      cursor: pointer;
+      text-align: left;
+    }
+    .subject:focus-visible, button:focus-visible {
+      outline: 3px solid #79cda0;
+      outline-offset: 2px;
+    }
+    .subject:hover { border-color: var(--green); }
+    .subject .emoji { font-size: 30px; }
+    .subject h3 { margin: 9px 0 5px; font-size: 16px; }
+    .subject p { margin: 0; color: var(--muted); font-size: 12px; }
+    .card {
+      padding: 21px;
+      margin: 15px 0;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: white;
+    }
+    .action {
+      padding: 12px 18px;
+      margin-top: 12px;
+      border: 0;
+      border-radius: 12px;
+      background: var(--green);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .secondary {
+      padding: 10px 15px;
+      margin: 5px 6px 5px 0;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: white;
+      color: var(--dark);
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .option {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      margin: 10px 0;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      background: white;
+      text-align: left;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    .option:disabled { cursor: default; opacity: 1; }
+    .option.correct { border-color: #2eae70; background: #e1f7e9; }
+    .option.wrong { border-color: #df7777; background: #fff0f0; }
+    .small { color: var(--muted); font-size: 13px; }
+    .lesson-text { font-size: 16px; line-height: 1.75; }
+    .hidden { display: none !important; }
+    footer { padding: 24px; color: #829087; text-align: center; font-size: 12px; }
+    @media (max-width: 480px) {
+      main { padding: 13px; }
+      header { padding: 15px; }
+      header h2 { font-size: 18px; }
+      .stats { gap: 9px; font-size: 13px; }
+      .subjects { gap: 9px; }
+      .subject { padding: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h2>🇪🇹 Grade 9 Quest</h2>
+    <div class="stats" aria-label="Player statistics">
+      <span>⭐ <span id="xp">0</span></span>
+      <span>❤️ <span id="hearts">5</span></span>
+      <span>🔥 <span id="streak">0</span></span>
+    </div>
+  </header>
+
+  <nav aria-label="Main navigation">
+    <button type="button" onclick="showHome()">🏠 Home</button>
+    <button type="button" onclick="showProgress()">📊 Progress</button>
+    <button type="button" onclick="showAchievements()">🏆 Awards</button>
+  </nav>
+
+  <main>
+    <section id="homePage">
+      <div class="welcome">
+        <h1>Keep learning! 🚀</h1>
+        <p>Your Grade 9 learning journey starts here.</p>
+        <p>Level <strong id="level">1</strong></p>
+        <div class="progress-bg" aria-label="Progress to next level">
+          <div class="progress-fill" id="levelProgress"></div>
+        </div>
+        <p class="small" id="xpText">0 / 100 XP to next level</p>
+      </div>
+      <h2>📚 Choose a subject</h2>
+      <div class="subjects" id="subjectList"></div>
+    </section>
+
+    <section id="lessonPage" class="hidden">
+      <button type="button" class="secondary" onclick="showHome()">← Back to subjects</button>
+      <div class="card">
+        <p class="small" id="unitName"></p>
+        <h2 id="lessonTitle"></h2>
+        <div class="lesson-text" id="lessonContent"></div>
+        <button type="button" class="action" onclick="startQuiz()">Start challenge →</button>
+      </div>
+    </section>
+
+    <section id="quizPage" class="hidden">
+      <div class="card">
+        <p class="small" id="quizNumber"></p>
+        <h2 id="question"></h2>
+        <div id="options"></div>
+        <p id="feedback" aria-live="polite"></p>
+        <button type="button" class="action hidden" id="nextButton" onclick="nextQuestion()">Continue →</button>
+      </div>
+    </section>
+
+    <section id="progressPage" class="hidden">
+      <h2>📊 Your learning progress</h2>
+      <div class="card">
+        <h3>⭐ Total XP: <span id="totalXP">0</span></h3>
+        <h3>🏆 Level: <span id="totalLevel">1</span></h3>
+        <h3>📖 Lessons completed: <span id="completedCount">0</span></h3>
+        <h3>🔥 Current streak: <span id="totalStreak">0</span></h3>
+      </div>
+      <button type="button" class="action" onclick="showHome()">Back home</button>
+    </section>
+
+    <section id="awardsPage" class="hidden">
+      <h2>🏆 Your achievements</h2>
+      <div id="awards"></div>
+      <button type="button" class="action" onclick="showHome()">Back home</button>
+    </section>
+  </main>
+
+  <footer>Grade 9 Quest 🇪🇹 | Learn • Play • Progress</footer>
+
+  <script>
+    "use strict";
+
+    const subjects = [
+      ["Mathematics", "📐"],
+      ["Biology", "🧬"],
+      ["Chemistry", "⚗️"],
+      ["Physics", "🚀"],
+      ["English", "📖"],
+      ["Amharic", "🇪🇹"],
+      ["Geography", "🌍"],
+      ["History", "🏛️"],
+      ["Citizenship Education", "⚖️"],
+      ["Economics", "📈"],
+      ["Information Technology", "💻"],
+      ["Health and Physical Education", "🏃"]
+    ];
+
+    // These are sample starter lessons, not the complete official syllabus.
+    // Check each lesson against the correct Ethiopian Grade 9 textbook edition.
+    const lessons = {
+      "Mathematics": [{
+        unit: "Starter lesson • Sets",
+        title: "Understanding sets",
+        content: `
+          <h3>What is a set?</h3>
+          <p>A set is a well-defined collection of distinct objects.</p>
+          <p><strong>Example:</strong> A = {1, 2, 3, 4}</p>
+          <p>The objects inside a set are called elements.</p>
+          <h3>Important symbols</h3>
+          <p>∈ means “belongs to”.</p>
+          <p>∉ means “does not belong to”.</p>
+          <p>Example: 2 ∈ A, but 7 ∉ A.</p>`,
+        questions: [
+          { q: "What is a set?", a: ["A well-defined collection of objects", "A random number", "A single equation", "A type of fraction"], correct: 0, why: "A set is a well-defined collection of distinct objects." },
+          { q: "If A = {1, 2, 3}, which number belongs to A?", a: ["5", "7", "2", "9"], correct: 2, why: "2 is an element of set A." },
+          { q: "What does ∈ mean?", a: ["Does not belong", "Belongs to", "Greater than", "Equal to"], correct: 1, why: "The symbol ∈ means belongs to." }
+        ]
+      }],
+      "Biology": [{
+        unit: "Starter lesson • Introduction to Biology",
+        title: "What is Biology?",
+        content: `
+          <h3>What is Biology?</h3>
+          <p>Biology is the scientific study of living organisms.</p>
+          <p>It includes the study of plants, animals and microorganisms.</p>
+          <h3>Some branches of Biology</h3>
+          <p><strong>Botany:</strong> Study of plants.</p>
+          <p><strong>Zoology:</strong> Study of animals.</p>
+          <p><strong>Microbiology:</strong> Study of microorganisms.</p>`,
+        questions: [
+          { q: "What is Biology?", a: ["Study of rocks", "Study of living organisms", "Study of planets", "Study of numbers"], correct: 1, why: "Biology is the scientific study of living organisms." },
+          { q: "Which branch studies plants?", a: ["Zoology", "Physics", "Botany", "Geology"], correct: 2, why: "Botany is the study of plants." },
+          { q: "Which branch studies animals?", a: ["Zoology", "Botany", "Chemistry", "Economics"], correct: 0, why: "Zoology is the study of animals." }
+        ]
+      }],
+      "Physics": [{
+        unit: "Starter lesson • Motion",
+        title: "Motion in a straight line",
+        content: `
+          <h3>What is motion?</h3>
+          <p>Motion is a change in the position of an object with time, relative to a reference point.</p>
+          <h3>Speed</h3>
+          <p><strong>Speed = Distance ÷ Time</strong></p>
+          <p>SI unit: metres per second (m/s).</p>
+          <h3>Example</h3>
+          <p>A car travels 100 metres in 5 seconds.</p>
+          <p>Speed = 100 ÷ 5 = 20 m/s.</p>`,
+        questions: [
+          { q: "What is the SI unit of speed?", a: ["Kilogram", "Metre", "m/s", "Second"], correct: 2, why: "Speed is measured in metres per second." },
+          { q: "What is the formula for average speed?", a: ["Time ÷ Distance", "Distance ÷ Time", "Mass × Time", "Force ÷ Area"], correct: 1, why: "Average speed = total distance divided by total time." },
+          { q: "A car travels 100 m in 5 s. What is its average speed?", a: ["5 m/s", "10 m/s", "20 m/s", "50 m/s"], correct: 2, why: "100 ÷ 5 = 20 m/s." }
+        ]
+      }],
+      "Chemistry": [{
+        unit: "Starter lesson • Introduction to Chemistry",
+        title: "Chemistry and matter",
+        content: `
+          <h3>What is Chemistry?</h3>
+          <p>Chemistry is the study of matter, its properties, composition and changes.</p>
+          <h3>What is matter?</h3>
+          <p>Matter is anything that has mass and occupies space.</p>
+          <h3>Three common states of matter</h3>
+          <p><strong>Solid:</strong> Has a fixed shape and volume.</p>
+          <p><strong>Liquid:</strong> Has a fixed volume but takes the shape of its container.</p>
+          <p><strong>Gas:</strong> Has no fixed shape or volume.</p>`,
+        questions: [
+          { q: "What does Chemistry study?", a: ["Only living things", "Matter and its changes", "Only planets", "Only numbers"], correct: 1, why: "Chemistry studies matter, its properties and changes." },
+          { q: "Which state has a fixed shape and volume?", a: ["Gas", "Liquid", "Solid", "Vapour"], correct: 2, why: "A solid has a fixed shape and volume." },
+          { q: "What is matter?", a: ["Anything that has mass and occupies space", "Only water", "Only air", "Only solid objects"], correct: 0, why: "Matter has mass and occupies space." }
+        ]
+      }]
+    };
+
+    const STORAGE_KEY = "grade9QuestData";
+    const defaultData = {
+      xp: 0,
+      streak: 0,
+      completed: [],
+      rewardedLessons: [],
+      lastDay: ""
+    };
+
+    function loadData() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return { ...defaultData };
+        const parsed = JSON.parse(raw);
+        return {
+          ...defaultData,
+          ...parsed,
+          completed: Array.isArray(parsed.completed) ? parsed.completed : [],
+          rewardedLessons: Array.isArray(parsed.rewardedLessons) ? parsed.rewardedLessons : []
+        };
+      } catch (error) {
+        return { ...defaultData };
+      }
+    }
+
+    let saved = loadData();
+    let currentSubject = "";
+    let currentLesson = null;
+    let questionIndex = 0;
+    let score = 0;
+    let answered = false;
+    let hearts = 5;
+    let quizFinished = false;
+
+    function saveData() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+      } catch (error) {
+        console.warn("Progress could not be saved in this browser.", error);
+      }
+    }
+
+    function updateStreak() {
+      const today = new Date().toLocaleDateString("en-CA");
+      if (saved.lastDay === today) return;
+
+      const yesterdayDate = new Date();
+      yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+      const yesterday = yesterdayDate.toLocaleDateString("en-CA");
+
+      saved.streak = saved.lastDay === yesterday ? saved.streak + 1 : 1;
+      saved.lastDay = today;
+      saveData();
+    }
+
+    function updateStats() {
+      const level = Math.floor(saved.xp / 100) + 1;
+      const remainder = saved.xp % 100;
+      document.getElementById("xp").textContent = saved.xp;
+      document.getElementById("hearts").textContent = hearts;
+      document.getElementById("streak").textContent = saved.streak;
+      document.getElementById("level").textContent = level;
+      document.getElementById("levelProgress").style.width = remainder + "%";
+      document.getElementById("xpText").textContent = remainder + " / 100 XP to next level";
+    }
+
+    const pageIds = ["homePage", "lessonPage", "quizPage", "progressPage", "awardsPage"];
+
+    /** @param {string} pageId */
+    function showPage(pageId) {
+      pageIds.forEach(id => document.getElementById(id).classList.add("hidden"));
+      document.getElementById(pageId).classList.remove("hidden");
+      window.scrollTo(0, 0);
+    }
+
+    function showHome() {
+      showPage("homePage");
+      updateStats();
+    }
+
+    function renderSubjects() {
+      const list = document.getElementById("subjectList");
+      list.textContent = "";
+
+      subjects.forEach(([name, emoji]) => {
+        const card = document.createElement("button");
+        card.type = "button";
+        card.className = "subject";
+
+        const icon = document.createElement("div");
+        icon.className = "emoji";
+        icon.textContent = emoji;
+
+        const title = document.createElement("h3");
+        title.textContent = name;
+
+        const description = document.createElement("p");
+        description.textContent = lessons[name]
+          ? "Starter lesson available"
+          : "Course content coming soon";
+
+        card.append(icon, title, description);
+        card.addEventListener("click", () => openSubject(name));
+        list.appendChild(card);
+      });
+    }
+
+    /** @param {string} name */
+    function openSubject(name) {
+      currentSubject = name;
+      const course = lessons[name];
+
+      if (!course || course.length === 0) {
+        alert("This subject is listed, but its lessons have not been added yet.");
+        return;
+      }
+
+      currentLesson = course[0];
+      document.getElementById("unitName").textContent = currentLesson.unit;
+      document.getElementById("lessonTitle").textContent = currentLesson.title;
+      document.getElementById("lessonContent").innerHTML = currentLesson.content;
+      showPage("lessonPage");
+    }
+
+    function startQuiz() {
+      if (!currentLesson || !Array.isArray(currentLesson.questions) || currentLesson.questions.length === 0) {
+        alert("This lesson does not have quiz questions yet.");
+        return;
+      }
+
+      questionIndex = 0;
+      score = 0;
+      hearts = 5;
+      answered = false;
+      quizFinished = false;
+
+      const nextButton = document.getElementById("nextButton");
+      nextButton.textContent = "Continue →";
+      nextButton.onclick = nextQuestion;
+
+      showPage("quizPage");
+      updateStats();
+      showQuestion();
+    }
+
+    function showQuestion() {
+      const questionData = currentLesson.questions[questionIndex];
+      document.getElementById("quizNumber").textContent =
+        "QUESTION " + (questionIndex + 1) + " OF " + currentLesson.questions.length;
+      document.getElementById("question").textContent = questionData.q;
+      document.getElementById("feedback").textContent = "";
+
+      const nextButton = document.getElementById("nextButton");
+      nextButton.classList.add("hidden");
+      nextButton.textContent = "Continue →";
+      nextButton.onclick = nextQuestion;
+
+      const optionsBox = document.getElementById("options");
+      optionsBox.textContent = "";
+      answered = false;
+
+      /** @type {string[]} */
+      const answerChoices = questionData.a;
+      answerChoices.forEach(
+        /** @param {string} answer @param {number} index */
+        (answer, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "option";
+        button.textContent = answer;
+        button.addEventListener("click", () => checkAnswer(index, button));
+        optionsBox.appendChild(button);
+      });
+    }
+
+    /**
+     * @param {number} selectedIndex
+     * @param {HTMLButtonElement} selectedButton
+     */
+    function checkAnswer(selectedIndex, selectedButton) {
+      if (answered || quizFinished) return;
+      answered = true;
+
+      const questionData = currentLesson.questions[questionIndex];
+      const optionButtons = document.querySelectorAll("#options .option");
+
+      optionButtons.forEach((button, index) => {
+        button.disabled = true;
+        if (index === questionData.correct) button.classList.add("correct");
+      });
+
+      if (selectedIndex === questionData.correct) {
+        score += 1;
+        document.getElementById("feedback").textContent = "✅ Correct! " + questionData.why;
+      } else {
+        selectedButton.classList.add("wrong");
+        hearts = Math.max(0, hearts - 1);
+        document.getElementById("feedback").textContent = "❌ Not quite. " + questionData.why;
+      }
+
+      updateStats();
+      document.getElementById("nextButton").classList.remove("hidden");
+    }
+
+    function nextQuestion() {
+      if (quizFinished) return;
+
+      questionIndex += 1;
+      if (questionIndex < currentLesson.questions.length) {
+        showQuestion();
+      } else {
+        finishQuiz();
+      }
+    }
+
+    function finishQuiz() {
+      quizFinished = true;
+      const total = currentLesson.questions.length;
+      const passed = score >= Math.ceil(total * 0.7);
+      const lessonKey = currentSubject + "::" + currentLesson.title;
+      const alreadyRewarded = saved.rewardedLessons.includes(lessonKey);
+
+      if (passed && !alreadyRewarded) {
+        saved.completed.push(lessonKey);
+        saved.rewardedLessons.push(lessonKey);
+        saved.xp += score * 10 + 20;
+        saveData();
+      }
+
+      document.getElementById("quizNumber").textContent = "CHALLENGE COMPLETE";
+      document.getElementById("question").textContent =
+        passed ? "🏆 Excellent work!" : "📚 Keep practicing!";
+
+      const optionsBox = document.getElementById("options");
+      optionsBox.textContent = "";
+
+      const result = document.createElement("h3");
+      result.textContent = "You scored " + score + " / " + total;
+      const message = document.createElement("p");
+      message.textContent = passed
+        ? (alreadyRewarded ? "You already earned XP for this lesson. Great revision!" : "Lesson completed! You earned XP.")
+        : "You need at least 70% to complete this lesson. Review it and try again.";
+
+      optionsBox.append(result, message);
+      document.getElementById("feedback").textContent = "";
+      const nextButton = document.getElementById("nextButton");
+      nextButton.textContent = "Back to lesson";
+      nextButton.classList.remove("hidden");
+      nextButton.onclick = () => openSubject(currentSubject);
+
+      updateStats();
+    }
+
+    function showProgress() {
+      document.getElementById("totalXP").textContent = saved.xp;
+      document.getElementById("totalLevel").textContent = Math.floor(saved.xp / 100) + 1;
+      document.getElementById("completedCount").textContent = saved.completed.length;
+      document.getElementById("totalStreak").textContent = saved.streak;
+      showPage("progressPage");
+    }
+
+    function showAchievements() {
+      const achievements = [
+        ["🌱 First Steps", saved.completed.length >= 1],
+        ["⭐ 100 XP Club", saved.xp >= 100],
+        ["🏆 5 Lessons", saved.completed.length >= 5],
+        ["🔥 500 XP Champion", saved.xp >= 500]
+      ];
+
+      const awards = document.getElementById("awards");
+      awards.textContent = "";
+
+      achievements.forEach(([name, unlocked]) => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.textContent = name + (unlocked ? " — UNLOCKED ✅" : " — LOCKED 🔒");
+        awards.appendChild(card);
+      });
+
+      showPage("awardsPage");
+    }
+
+    updateStreak();
+    renderSubjects();
+    updateStats();
+    showHome();
+  </script>
+</body>
+</html>
